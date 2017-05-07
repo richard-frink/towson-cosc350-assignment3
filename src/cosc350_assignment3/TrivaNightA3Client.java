@@ -51,8 +51,6 @@ public class TrivaNightA3Client {
         
         // form the dvr/tcp message to send to the server
         // message should be the number of entries, followed by the pairs of destinations and distances
-        
-        
     }
     
     private static void printPairs(int[][] pairs){
