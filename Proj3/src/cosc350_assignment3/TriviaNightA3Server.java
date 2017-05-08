@@ -77,30 +77,25 @@ public class TriviaNightA3Server {
         
         printRoutingTable(rTable);
         
-        //here should be a space that a tcp connection is made and recieves user data (like shown in line 82)
+        // TCP connection is made and receives client's data
         ServerSocket welcomeSocket = new ServerSocket(6789);
         String fromClient;
-        String fromServer;
         
 		while (true) {
 			Socket connectionSocket = welcomeSocket.accept();
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 			fromClient = inFromClient.readLine();
 			System.out.println("Received: " + fromClient);
 
 			String[] pairsInString = fromClient.split(" ");        
-	        int[][] fromClient2 = parseStringPairs(pairsInString);
+	        int[][] arrayFromClient = parseStringPairs(pairsInString);
 	        
-	        updateRoutingTable(6, rTable, fromClient2);
+	        // The number of entries is implicitly received by taking 'fromClient.length'
+	        updateRoutingTable(6, rTable, arrayFromClient);
 	        
 	        printRoutingTable(rTable);
-			
-			//outToClient.writeBytes(stringServerEntries);
 		}
-        
-        //int[][] fromClient = new int[][]{{6,0},{3,2},{2,8},{5,28}};
-        //String stringFromClient = "(6,0) (3,2) (2,8) (5,28)";
+		
     }
     
     private static int[][] parseStringPairs(String[] pairs)
