@@ -5,6 +5,10 @@
  */
 package cosc350_assignment3;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.*;
 
 /** This is referred to as R2:
@@ -27,7 +31,7 @@ import java.util.*;
  * pairs in the DVR message. 
  */
 public class TrivaNightA3Client {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         
         int[][] entries;
         
@@ -47,19 +51,36 @@ public class TrivaNightA3Client {
         }
         
         System.out.print("Sending the following pairs to the server... \n");
-        printPairs(entries);
+        String sendToServer = printPairs(entries);
         
         // form the dvr/tcp message to send to the server
         // message should be the number of entries, followed by the pairs of destinations and distances
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+        Socket clientSocket = new Socket("localhost", 6789);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        
+        //BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        
+        outToServer.writeBytes(sendToServer + '\n');
+        //modifiedSentence = inFromServer.readLine();
+        //System.out.println("FROM SERVER: " + modifiedSentence);
+        clientSocket.close();
+       
     }
     
-    private static void printPairs(int[][] pairs){
+    private static String printPairs(int[][] pairs){
+    	String string = "";
         for(int i = 0; i < pairs.length; i++){
             int[] ab = new int[2];
             for(int j = 0; j < pairs[i].length; j++){
                 ab[j] = pairs[i][j];
             }
-            System.out.print("(" + ab[0] + "," + ab[1] + ") ");
+            String s = "(" + ab[0] + "," + ab[1] + ")";
+            System.out.print(s);
+            string += s;
+            if(i + 1 < pairs.length)
+            	string += " ";
         }
+        return string;
     }
 }

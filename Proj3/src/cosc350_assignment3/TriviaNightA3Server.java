@@ -32,7 +32,7 @@ import java.net.*;
  * R1 prints its updated routing table
  */
 public class TriviaNightA3Server {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         int[][] rTable; // this includes next hop and distances
         int[] neighbors;
@@ -78,12 +78,43 @@ public class TriviaNightA3Server {
         printRoutingTable(rTable);
         
         //here should be a space that a tcp connection is made and recieves user data (like shown in line 82)
+        ServerSocket welcomeSocket = new ServerSocket(6789);
+        String fromClient;
+        String fromServer;
         
-        int[][] fromClient = new int[][]{{6,0},{3,2},{2,8},{5,28}};
+		while (true) {
+			Socket connectionSocket = welcomeSocket.accept();
+			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+			fromClient = inFromClient.readLine();
+			System.out.println("Received: " + fromClient);
+
+			String[] pairsInString = fromClient.split(" ");        
+	        int[][] fromClient2 = parseStringPairs(pairsInString);
+	        
+	        updateRoutingTable(6, rTable, fromClient2);
+	        
+	        printRoutingTable(rTable);
+			
+			//outToClient.writeBytes(stringServerEntries);
+		}
         
-        updateRoutingTable(6, rTable, fromClient);
-        
-        printRoutingTable(rTable);
+        //int[][] fromClient = new int[][]{{6,0},{3,2},{2,8},{5,28}};
+        //String stringFromClient = "(6,0) (3,2) (2,8) (5,28)";
+    }
+    
+    private static int[][] parseStringPairs(String[] pairs)
+    {
+    	int[][] goodForm = new int[pairs.length][2];
+    	for(int i = 0; i < pairs.length; i++)
+    	{
+    		String temp = pairs[i];
+    		char num1 = temp.charAt(1);
+    		char num2 = temp.charAt(3);
+    		goodForm[i][0] = Character.getNumericValue(num1);
+    		goodForm[i][1] = Character.getNumericValue(num2);
+    	}
+    	return goodForm;
     }
     
     private static void printRoutingTable(int[][] table){
